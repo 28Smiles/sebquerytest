@@ -9,6 +9,4 @@ services:
     ports:
       - "0.0.0.0:8000:8000"
     command: >
-      bash -c "pip install -r requirements.txt
-               && pip install uvicorn
-               && uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
+      bash -c "pip install -r requirements.txt && pip install uvicorn && uvicorn app:app --host 0.0.0.0 --port 8000 --reload"
