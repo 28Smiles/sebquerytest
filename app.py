@@ -72,10 +72,16 @@ async def root(request: Request):
     <html>
     <body>
         <h1>Welcome</h1>
+        <h2>Query Parameters Not Picked Up</h2>
         <a href="seb://{wwwroot}/start?id=1?aid=1">Start 1 1</a>
         <a href="seb://{wwwroot}/start?id=1?aid=2">Start 1 2</a>
         <a href="seb://{wwwroot}/start?id=2?aid=1">Start 2 1</a>
         <a href="seb://{wwwroot}/start?id=2?aid=2">Start 2 2</a>
+        <h2>Query Parameters More Params</h2>
+        <a href="seb://{wwwroot}/start?id=1&bid=1?aid=1&cid=1">Start 1 1</a>
+        <a href="seb://{wwwroot}/start?id=1&bid=1?aid=2&cid=2">Start 1 2</a>
+        <a href="seb://{wwwroot}/start?id=2&bid=2?aid=1&cid=1">Start 2 1</a>
+        <a href="seb://{wwwroot}/start?id=2&bid=2?aid=2&cid=2">Start 2 2</a>
     </body>
     </html>
     """
@@ -89,7 +95,7 @@ async def start(request: Request):
     queryparams = request.url.__str__().split("?")[1] if "?" in request.url.__str__() else ""
     id = None
     if queryparams.startswith("id="):
-        id = int(queryparams[3:])
+        id = int(queryparams[3:4])
 
     file_content = create_file_content(wwwroot, id)
     temp_file = generate_temp_file(file_content)
@@ -103,13 +109,19 @@ async def start(request: Request):
 
 
 @app.get("/home", response_class=HTMLResponse)
-async def application(id: int, aid: Optional[int] = None):
+async def application(request: Request):
+    # The following is crude but fastapi does not ignore the second ?.
+    queryparams = request.url.__str__().split("?")[1] if "?" in request.url.__str__() else ""
+    id = None
+    if queryparams.startswith("id="):
+        id = int(queryparams[3:4])
+
     content = f"""
     <!DOCTYPE html>
     <html>
     <body>
         <h1>Application Page</h1>
-        <p>ID: {id}, AID: {aid}</p>
+        <p>URL: {request.url}</p>
         <a href="/stop?id={id}">Stop</a>
     </body>
     </html>
